@@ -46,7 +46,7 @@
 [-+]?[0-9]+ {yylval.intval=atoi(yytext); return INTEGER;}
 [-+]?[0-9]*[.][0-9]+ {yylval.fval = atof(yytext); return FLOAT;}
 [a-zA-Z] { yylval.char=strdup(yytext); return CHAR;}
-\"[_a-zA-Z ]+\" {yylval.strval=strdup(yytext); return STRING;}
+\"[a-zA-Z ]+\" {yylval.strval=strdup(yytext); return STRING;}
 [ \t] ;
 \n {yylineno++;}
 . {return yytext[0];}
