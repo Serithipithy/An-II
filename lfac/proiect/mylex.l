@@ -43,8 +43,8 @@
 "," {return COMMA;}
 "int"|"float"|"char"|"string"|"bool" {yylval.str = strdup(yytext); return TIP;}
 \#[_a-zA-Z][_a-zA-Z0-9]* {yylval.str = strdup(yytext); return ID;}
-[-+]?[0-9]+ {yylval.intval=atoi(yytext); return INTEGER;}
-[-+]?[0-9]*[.][0-9]+ {yylval.fval = atof(yytext); return FLOAT;}
+[-+]?[1-9][0-9]* {yylval.intval=atoi(yytext); return INTEGER;}
+[-+]?[1-9]*[.][0-9]+ {yylval.fval = atof(yytext); return FLOAT;}
 [a-zA-Z] { yylval.char=strdup(yytext); return CHAR;}
 \"[_a-zA-Z ]+\" {yylval.strval=strdup(yytext); return STRING;}
 [ \t] ;
