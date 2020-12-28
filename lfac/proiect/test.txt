@@ -1,0 +1,8 @@
+begin_main
+int #a;
+char #b;
+int #v[23];
+int #c[12][2];
+if( #a < #b ) then { #a = #a + #b } end_if
+while( #c < #d ) do { #c = #c + #d } endwhile
+end_main
