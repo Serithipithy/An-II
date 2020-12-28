@@ -8,7 +8,7 @@ extern int yylineno;
 %}
 
 %token BOOL BGIN END IF THEN ELSE ENDIF WHILE DO ENDWHILE FOR THENDO ENDFOR CLASS AND OR
-%token BOOLEQUAL ASSIGN EQUAL NOT NEG LESS LESSEQUAL GREAT GRETEQUAL PLUS MINUS MULT DIVIDE
+%token BOOLEQUAL ASSIGN EQUAL NOT NEG LESS LESSEQUAL GREAT GREATEQUAL PLUS MINUS MULT DIVIDE
 %token RPARAN LPARAN BROPEN BRCLOSE AOPEN ACLOSE SEMICOLON COMMA TIP ID INTEGER CHAR FLOAT STRING
 
 %start compilator
@@ -37,7 +37,7 @@ declaratii: declaratie
 declaratie: TIP ID SEMICOLON /* int a;int b;*/
           | TIP ID LPARAN lista_param RPARAN  /*char abc (int a,int b) inca confuza af despre asta zic sa scoatem*/
           | TIP ID BROPEN INTEGER BRCLOSE SEMICOLON  /*int v[34] vectori gen*/
-          | TIP ID BROPEN INTEGER BRCLOSE BROPEN INTEGER BRCLOSE SEMICOLON/* int a[2][4] matrici gen */
+          | TIP ID BROPEN INTEGER BRCLOSE BROPEN INTEGER BRCLOSE SEMICOLON /* int a[2][4] matrici gen */
           ;
 
 lista_param: param
@@ -57,7 +57,7 @@ instructiuni: loops
             | operatii instructiuni
             ;
 
-loops: FOR LPARAN expresii RPARAN  DO AOPEN operatii ACLOSE ENDFOR
+loops: FOR LPARAN expresii RPARAN DO AOPEN operatii ACLOSE ENDFOR
      | WHILE LPARAN expresii RPARAN DO AOPEN operatii ACLOSE ENDWHILE
      ;
 
@@ -65,8 +65,9 @@ statement: IF LPARAN expresii RPARAN THEN AOPEN operatii ACLOSE ENDIF
          | ELSE DO AOPEN operatii ACLOSE
          | IF LPARAN expresii RPARAN THEN AOPEN operatii ACLOSE ENDIF ELSE DO AOPEN operatii ACLOSE
          ;
-/*astea sunt gen if(a<b) sau while(x>10) **pt for nu stiu exact cum sa facem*/
 
+
+/*astea sunt gen if(a<b) sau while(x>10) **pt for nu stiu exact cum sa facem*/
 expresii:expresie
         | expresii operator_bool expresie
         ;
@@ -98,6 +99,7 @@ operatie:ID ASSIGN ID
         | ID MULT tipuri
         | ID DIVIDE tipuri
         ;
+
 tipuri:INTEGER
       |FLOAT
       |CHAR

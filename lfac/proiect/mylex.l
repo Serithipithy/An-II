@@ -28,7 +28,7 @@
 "<" {return LESS;}
 "<=" {return LESSEQUAL;}
 ">" {return GREAT;}
-">=" {return GRETEQUAL;}
+">=" {return GREATEQUAL;}
 "+" {return PLUS;}
 "-" {return MINUS;}
 "*" {return MULT;}

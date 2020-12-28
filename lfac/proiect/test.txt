@@ -5,7 +5,7 @@ char #b;
 int #v[23];
 int #c[12][2];
 if( #a < #b ) then { #a = #a + #b ; } end_if
-for( #b > #d ) do { #b = #a + #d ; } endfor // din nou fara asta merge cu asta nu...
+for( #b > #d ) do { #b = #a + #d ; } endfor
 #d = #d + 3 ;
 #a = #c + #d ;
 end_main
