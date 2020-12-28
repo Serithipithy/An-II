@@ -4,5 +4,5 @@ char #b;
 int #v[23];
 int #c[12][2];
 if( #a < #b ) then { #a = #a + #b } end_if
-while( #c < #d ) do { #c = #c + #d } endwhile
+while( #c < #d ) do { #c = #c + #d } endwhile //daca scoti asta spune ca e corect sintactic..nu inteleg de ce nu merge cu
 end_main
