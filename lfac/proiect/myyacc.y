@@ -12,6 +12,14 @@ extern int yylineno;
 %token RPARAN LPARAN BROPEN BRCLOSE AOPEN ACLOSE SEMICOLON COMMA TIP ID INTEGER CHAR FLOAT STRING
 
 %start compilator
+%union
+{
+    int num;
+    char* str;
+}
+
+%type <num> INTEGER FLOAT
+%type <str> TIP ID CHAR STRING BOOL
 
 %%
 
@@ -24,6 +32,7 @@ program: declaratii instructiuni /* gen int a; char b;  si dupa ce faci cu ele*/
 
 declaratii: declaratie
           | declaratii declaratie /* int a;int b;*/
+          ;
 
 declaratie: TIP ID SEMICOLON /* int a;int b;*/
           | TIP ID LPARAN lista_param RPARAN  /*char abc (int a,int b) inca confuza af despre asta zic sa scoatem*/
@@ -43,14 +52,18 @@ param: TIP ID
 instructiuni: loops
             | statement
             | operatii
+            | loops instructiuni
+            | statement instructiuni
+            | operatii instructiuni
             ;
 
 loops: FOR LPARAN expresii RPARAN  DO AOPEN operatii ACLOSE ENDFOR
-     | WHILE LPARAN expresii RPARAN  DO AOPEN operatii ACLOSE ENDWHILE
+     | WHILE LPARAN expresii RPARAN DO AOPEN operatii ACLOSE ENDWHILE
+     ;
 
 statement: IF LPARAN expresii RPARAN THEN AOPEN operatii ACLOSE ENDIF
          | ELSE DO AOPEN operatii ACLOSE
-         | IF LPARAN expresii RPARAN THEN AOPEN operatii ACLOSE ENDIF ELSE DO BROPEN operatii BRCLOSE
+         | IF LPARAN expresii RPARAN THEN AOPEN operatii ACLOSE ENDIF ELSE DO AOPEN operatii ACLOSE
          ;
 /*astea sunt gen if(a<b) sau while(x>10) **pt for nu stiu exact cum sa facem*/
 
@@ -71,9 +84,11 @@ operator_bool:AND
              |GREAT
              |GRETEQUAL
              ;
+operatii:operatie SEMICOLON
+        ;
 
-operatii: ID ASSIGN ID
-        | ID EQUAL operatii
+operatie:ID ASSIGN ID
+        | ID EQUAL operatie
         | ID PLUS ID
         | ID MINUS ID
         | ID MULT ID

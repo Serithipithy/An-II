@@ -4,7 +4,7 @@
 %}
 %option noyywrap
 %%
-"TRUE" | "FALSE" {yylval.strval=strdup(yytext); return BOOL;}
+"TRUE" | "FALSE" {yylval.str=strdup(yytext); return BOOL;}
 "begin_main" {return BGIN;}
 "end_main" {return END;}
 "if" {return IF;}
@@ -43,10 +43,10 @@
 "," {return COMMA;}
 "int"|"float"|"char"|"string"|"bool" {yylval.str = strdup(yytext); return TIP;}
 \#[_a-zA-Z][_a-zA-Z0-9]* {yylval.str = strdup(yytext); return ID;}
-[-+]?[1-9][0-9]* {yylval.intval=atoi(yytext); return INTEGER;}
-[-+]?[1-9]*[.][0-9]+ {yylval.fval = atof(yytext); return FLOAT;}
-[a-zA-Z] { yylval.char=strdup(yytext); return CHAR;}
-\"[_a-zA-Z ]+\" {yylval.strval=strdup(yytext); return STRING;}
+[-+]?[1-9][0-9]* {yylval.num=atoi(yytext); return INTEGER;}
+[-+]?[1-9]*[.][0-9]+ {yylval.num = atoi(yytext); return FLOAT;}
+[a-zA-Z] { yylval.str=strdup(yytext); return CHAR;}
+\"[_a-zA-Z ]+\" {yylval.str=strdup(yytext); return STRING;}
 [ \t] ;
 \n {yylineno++;}
 . {return yytext[0];}
