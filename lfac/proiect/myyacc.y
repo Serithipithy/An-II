@@ -23,89 +23,64 @@ extern int yylineno;
 
 %%
 
-compilator: BGIN program END {printf("program corect sintactic \n");}
+compilator: program {printf("program corect sintactic \n");}
           ;
 
-program: declaratii instructiuni /* gen int a; char b;  si dupa ce faci cu ele*/
-       ;
-/*declaratii de variabile*/
+program:declaratii main
+	     | main
+	     ;
 
-declaratii: declaratie
-          | declaratii declaratie /* int a;int b;*/
-          ;
+main:BGIN AOPEN blocuri ACLOSE END
+    ;
 
-declaratie: TIP ID SEMICOLON /* int a;int b;*/
-          | TIP ID LPARAN lista_param RPARAN  /*char abc (int a,int b) inca confuza af despre asta zic sa scoatem*/
-          | TIP ID BROPEN INTEGER BRCLOSE SEMICOLON  /*int v[34] vectori gen*/
-          | TIP ID BROPEN INTEGER BRCLOSE BROPEN INTEGER BRCLOSE SEMICOLON /* int a[2][4] matrici gen */
-          ;
+declaratii:declaratie
+	        | declaratii declaratie
+	        ;
 
-lista_param: param
-           | lista_param COMMA param
-           ;
+declaratie: TIP ID SEMICOLON /*int a; sau int a,b,c;*/
+	        | TIP ID BROPEN INTEGER BRCLOSE SEMICOLON /*vectori*/
+	        | TIP ID BROPEN INTEGER BRCLOSE BROPEN INTEGER BRCLOSE SEMICOLON /*matrici*/
+	        ;
 
-param: TIP ID
-     ;
+blocuri: bloc
+	     | blocuri bloc
+	     ;
 
-/*instructiuni gen for while si altele */
+bloc: IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ENDIF
+    | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ELSE AOPEN operatii ACLOSE ENDIF
+    | WHILE LPARAN conditii RPARAN DO AOPEN operatii ACLOSE ENDWHILE
+    | FOR LPARAN conditie_for RPARAN DO AOPEN operatii ACLOSE ENDFOR
+    | operatii SEMICOLON
+    | declaratie
+    ;
 
-instructiuni: loops
-            | statement
-            | operatii
-            | loops instructiuni
-            | statement instructiuni
-            | operatii instructiuni
-            ;
-
-loops: FOR LPARAN expresii RPARAN DO AOPEN operatii ACLOSE ENDFOR
-     | WHILE LPARAN expresii RPARAN DO AOPEN operatii ACLOSE ENDWHILE
-     ;
-
-statement: IF LPARAN expresii RPARAN THEN AOPEN operatii ACLOSE ENDIF
-         | ELSE DO AOPEN operatii ACLOSE
-         | IF LPARAN expresii RPARAN THEN AOPEN operatii ACLOSE ENDIF ELSE DO AOPEN operatii ACLOSE
-         ;
-
-
-/*astea sunt gen if(a<b) sau while(x>10) **pt for nu stiu exact cum sa facem*/
-expresii:expresie
-        | expresii operator_bool expresie
-        ;
-
-expresie: ID operator_bool ID
-        | ID operator_bool INTEGER
-        ;
-
-operator_bool:AND
-             |OR
-             |BOOLEQUAL
-             |NEG
-             |LESSEQUAL
-             |LESS
-             |GREAT
-             |GRETEQUAL
-             ;
+conditii: NOT operand
+	      | operand BOOLEQUAL operand
+	      | operand LESSEQUAL operand
+	      | operand GREATEQUAL operand
+	      | operand LESS operand
+	      | operand GREAT operand
+	      | operand NEG operand
+	      | conditii AND operand
+	      | conditii OR operand
+	      ;
+operand: ID
+	     | INTEGER
+       | FLOAT
+	     ;
 operatii:operatie SEMICOLON
+        | operatie SEMICOLON operatii
         ;
-
-operatie:ID ASSIGN ID
-        | ID EQUAL operatie
-        | ID PLUS ID
-        | ID MINUS ID
-        | ID MULT ID
-        | ID DIVIDE ID
-        | ID PLUS tipuri
-        | ID MINUS tipuri
-        | ID MULT tipuri
-        | ID DIVIDE tipuri
+operatie:operand PLUS operand
+        |operand MINUS operand
+        |operand MULT operand
+        |operand DIVIDE operand
+        |LPARAN operatie RPARAN
         ;
-
-tipuri:INTEGER
-      |FLOAT
-      |CHAR
-      |STRING
-      ;
-
+conditie_for:statement SEMICOLON conditii SEMICOLON operatie
+            ;
+statement:ID ASSIGN operand
+         ;
 %%
 void yyerror(char * s){
 printf("eroare: %s la linia:%d\n",s,yylineno);
