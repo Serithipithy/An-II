@@ -25,7 +25,7 @@ extern int yylineno;
     char* str;
 }
 
-%type <num> INTEGER FLOAT operatie
+%type <num> INTEGER FLOAT operatie operand
 %type <str> TIP ID CHAR STRING BOOL
 
 %%
@@ -52,14 +52,19 @@ declaratii:declaratie
 	   ;
 
 declaratie: TIP ID SEMICOLON /*int a; sau int a,b,c;*/
-	  | TIP ID BROPEN INTEGER BRCLOSE SEMICOLON /*vectori*/
-	  | TIP ID BROPEN INTEGER BRCLOSE BROPEN INTEGER BRCLOSE SEMICOLON /*matrici*/
+	  | TIP ID ASSIGN INTEGER SEMICOLON
+	  | TIP ID ASSIGN FLOAT SEMICOLON
+	  | TIP ID ASSIGN STRING SEMICOLON
+	  | TIP ID ASSIGN CHAR SEMICOLON
+	  | TIP ID ASSIGN ID SEMICOLON
 	  | CONST TIP ID SEMICOLON
-	  | TIP ID sign // pt functii si clase
+	  | CONST TIP ID ASSIGN INTEGER SEMICOLON
+	  | CONST TIP ID  ASSIGN FLOAT SEMICOLON
+	  | TIP ID signatura // pt functii si clase
 	  ;
-sign: AOPEN ACLOSE
-    | AOPEN parametrii ACLOSE
-    ;
+signatura: AOPEN ACLOSE
+    	 | AOPEN parametrii ACLOSE
+    	 ;
 
 parametrii: TIP ID
 	  | parametrii COMMA TIP ID
@@ -78,6 +83,7 @@ bloc: IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ENDIF
     ;
 
 conditii: operand
+	 | BOOL
 	 | NOT operand
 	 | operand BOOLEQUAL operand
 	 | operand LESSEQUAL operand
@@ -86,12 +92,11 @@ conditii: operand
          | operand GREAT operand
          | operand NEG operand
          | conditii AND conditii
-         | conditii OR conditii
-	 | BOOL 
+         | conditii OR conditii 
          ;
-operand: ID
-       | INTEGER
-       | FLOAT
+operand: ID /* functie returnare valoare */
+       | INTEGER {$$ = $1;}
+       | FLOAT {$$ = $1;}
 	     ;
 operatii: tip_operatie SEMICOLON
         | operatii tip_operatie SEMICOLON
