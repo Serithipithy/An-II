@@ -9,7 +9,10 @@ extern int yylineno;
 
 struct variabila
 {
-int valoare;
+int valoare_int;
+float valoare_float;
+char valoare_char;
+char* valoare_string;
 char* nume;
 char* tip_variabila;
 bool constanta;
@@ -56,11 +59,11 @@ void declarare_fara_initializare(char* tip_variabila,char* nume,bool constanta)
      variabile[v].nume=strdup(nume);
      variabile[v].valoare_init=0;
      variabile[v].constanta=0;
-     k++;
+     v++;
 }
 
 
-void declarare_cu_initializare(char* tip_variabila,char*nume,int valoare,bool constanta)
+void declarare_cu_initializare_int(char* tip_variabila,char*nume,int valoare,bool constanta)
 {
     if(variabile_declarate(nume)!=-1)
       {
@@ -69,12 +72,149 @@ void declarare_cu_initializare(char* tip_variabila,char*nume,int valoare,bool co
         yyerror(buffer);
         exit(0);
       }
+    if(strcmp(tip_variabila,"int") != 0)
+    {
+		char buffer[200];
+        sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip int.",nume, tip_variabila);
+        yyerror(buffer);
+        exit(1);
+    }
     variabile[v].tip_variabila=strdup(tip_variabila);
     variabile[v].nume=strdup(nume);
-    variabile[v].valoare=valoare;
+    variabile[v].valoare_int=valoare;
     variabile[v].valoare_init=1;
     variabile[v].constanta=constanta;
-    k++;
+    v++;
+}
+
+void declarare_cu_initializare_float(char* tip_variabila,char*nume,float valoare,bool constanta)
+{
+    if(variabile_declarate(nume)!=-1)
+      {
+        char buffer[200];
+        sprintf(buffer,"Variabila %s este deja declarata",nume);
+        yyerror(buffer);
+        exit(0);
+      }
+      if(strcmp(tip_variabila,"float") != 0)
+    {
+		char buffer[200];
+        sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip float.",nume, tip_variabila);
+        yyerror(buffer);
+        exit(1);
+    }
+    variabile[v].tip_variabila=strdup(tip_variabila);
+    variabile[v].nume=strdup(nume);
+    variabile[v].valoare_float=valoare;
+    variabile[v].valoare_init=1;
+    variabile[v].constanta=constanta;
+    v++;
+}
+
+void declarare_cu_initializare_char(char* tip_variabila,char*nume,char valoare,bool constanta)
+{
+    if(variabile_declarate(nume)!=-1)
+      {
+        char buffer[200];
+        sprintf(buffer,"Variabila %s este deja declarata",nume);
+        yyerror(buffer);
+        exit(0);
+      }
+
+  	if(strcmp(tip_variabila,"char") != 0)
+    {
+		char buffer[200];
+        sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip char.",nume, tip_variabila);
+        yyerror(buffer);
+        exit(1);
+    }
+    variabile[v].tip_variabila=strdup(tip_variabila);
+    variabile[v].nume=strdup(nume);
+    variabile[v].valoare_char=valoare;
+    variabile[v].valoare_init=1;
+    variabile[v].constanta=constanta;
+    v++;
+}
+
+void declarare_cu_initializare_string(char* tip_variabila,char*nume,char* valoare,bool constanta)
+{
+    if(variabile_declarate(nume)!=-1)
+      {
+        char buffer[200];
+        sprintf(buffer,"Variabila %s este deja declarata",nume);
+        yyerror(buffer);
+        exit(0);
+      }
+    if(strcmp(tip_variabila,"string") != 0)
+    {
+		char buffer[200];
+        sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip string.",nume, tip_variabila);
+        yyerror(buffer);
+        exit(1);
+    }
+    variabile[v].tip_variabila=strdup(tip_variabila);
+    variabile[v].nume=strdup(nume);
+    variabile[v].valoare_string=valoare;
+    variabile[v].valoare_init=1;
+    variabile[v].constanta=constanta;
+    v++;
+}
+
+void declarare_cu_variabila_initializata(char* tip_variabila,char* nume,char* variabila, bool constanta)
+{
+	if(variabile_declarate(nume)!=-1)
+    {
+        char buffer[200];
+        sprintf(buffer,"Variabila %s este deja declarata",nume);
+        yyerror(buffer);
+        exit(0);
+    }
+    int pozitie=variabile_declarate(variabila);
+    if(pozitie == -1)
+	{
+		char buffer[256];
+		sprintf(buffer,"Variabila %s nu poate fi initializata cu o variabila nedeclarata",nume);
+		yyerror(buffer);
+		exit(1);
+	}
+	if(strcmp(tip_variabila,variabile[pozitie].tip_variabila) != 0)
+	{
+		char buffer[256];
+		sprintf(buffer,"Variabilele %s si %s nu sunt de acelasi tip.",nume,variabile[pozitie].nume);
+		yyerror(buffer);
+		exit(2);
+	}
+	if(variabila[pozitie].valoare_init == 0)
+	{
+		char buffer[256];
+		sprintf(buffer,"Variabilele %s nu poate fi initializata deoarece variabila %s nu are inca o valoare initializata.",nume,variabile[pozitie].nume);
+		yyerror(buffer);
+		exit(3);
+	}
+
+	variabile[v].tip_variabila=strdup(tip_variabila);
+	variabile[v].nume=strdup(nume);
+	variabile[v].valoare_init=1;
+	variabile[v].constanta=constata;
+	if(strcmp(tip_variabila,"int") == 0)
+	{
+		variabile[v].valoare_string=valoare;
+	}
+	else
+		if(strcmp(tip_variabila,"float") == 0)
+		{
+			variabile[v].valoare_string=valoare;
+		}
+		else
+			if(strcmp(tip_variabila,"char") == 0)
+			{
+				variabile[v].valoare_string=valoare;
+			}
+			else
+				{
+					variabile[v].valoare_string=valoare;
+				}
+	v++;
 }
 
 int valoarea_variabilei(char* nume)
@@ -144,13 +284,13 @@ declaratii:declaratie
 	   ;
 
 declaratie: TIP ID SEMICOLON /*int a; sau int a,b,c;//functie de declarare fara valoare*/ {declarare_fara_initializare($1,$2,0);}
-	  | TIP ID ASSIGN INTEGER SEMICOLON /*functie de declarare cu o valoare*/{declarare_cu_initializare($1,$2,$4,0);}
-	  | TIP ID ASSIGN FLOAT SEMICOLON
-	  | TIP ID ASSIGN STRING SEMICOLON
-	  | TIP ID ASSIGN CHAR SEMICOLON
+	  | TIP ID ASSIGN INTEGER SEMICOLON /*functie de declarare cu o valoare*/{declarare_cu_initializare_int($1,$2,$4,0);}
+	  | TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($1,$2,$4,0);}
+	  | TIP ID ASSIGN STRING SEMICOLON {declarare_cu_initializare_string($1,$2,$4,0);}
+	  | TIP ID ASSIGN CHAR SEMICOLON {declarare_cu_initializare_char($1,$2,$4,0);}
 	  | TIP ID ASSIGN ID SEMICOLON
-	  | CONST TIP ID SEMICOLON
-	  | CONST TIP ID ASSIGN INTEGER SEMICOLON
+	  | CONST TIP ID SEMICOLON {declarare_fara_initializare($2,$3,1);}
+	  | CONST TIP ID ASSIGN INTEGER SEMICOLON {declarare_cu_initializare($2,$3,$5,1);}
 	  | CONST TIP ID  ASSIGN FLOAT SEMICOLON
 	  | TIP ID signatura // pt functii si clase
 	  ;
@@ -214,4 +354,3 @@ int main(int argc, char** argv){
 yyin=fopen(argv[1],"r");
 yyparse();
 }
-
