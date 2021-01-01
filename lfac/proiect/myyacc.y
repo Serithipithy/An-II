@@ -13,10 +13,11 @@ extern int yylineno;
 
 %start compilator
 
-%left PLUS MINUS
-%left MUL DIVIDE
+%left SEMICOLON
 %left OR AND
-%left COMMA
+%left PLUS MINUS
+%left MULT DIVIDE
+%left LPARAN RPARAN
 
 %union
 {
@@ -24,7 +25,7 @@ extern int yylineno;
     char* str;
 }
 
-%type <num> INTEGER FLOAT operatie operand
+%type <num> INTEGER FLOAT operatie
 %type <str> TIP ID CHAR STRING BOOL
 
 %%
@@ -97,11 +98,11 @@ operatii: tip_operatie SEMICOLON
         ;
 tip_operatie: ID EQUAL operatie
 	    ;
-operatie:operand PLUS operand {$$ = $1 + $3;}
-        |operand MINUS operand {$$ = $1 + $3;}
-        |operand MULT operand {$$ = $1 + $3;}
-        |operand DIVIDE operand {$$ = $1 + $3;}
-	|operand
+operatie:operand
+	|operatie PLUS operatie {$$ = $1 + $3;}
+        |operatie MINUS operatie {$$ = $1 + $3;}
+        |operatie MULT operatie {$$ = $1 + $3;}
+        |operatie DIVIDE operatie {$$ = $1 + $3;}
         ;
 conditie_for:statement SEMICOLON conditii SEMICOLON operatie
             ;
