@@ -43,14 +43,14 @@ void declarare_fara_initializare(char* tip_variabila,char* nume,bool constanta)
 {
       if(variabile_declarate(nume)!=-1)
        {
-         char buffer[200];
+         char buffer[256];
          sprintf(buffer,"Variabila %s este deja declarata",nume);
          yyerror(buffer);
          exit(0);
        }
      if(constanta==1)
       {
-        char buffer[200];
+        char buffer[256];
         sprintf(buffer,"Nu puteti declara variabile de tip const %s fara initializare",nume);
         yyerror(buffer);
         exit(0);
@@ -67,14 +67,14 @@ void declarare_cu_initializare_int(char* tip_variabila,char*nume,int valoare,boo
 {
     if(variabile_declarate(nume)!=-1)
       {
-        char buffer[200];
+        char buffer[256];
         sprintf(buffer,"Variabila %s este deja declarata",nume);
         yyerror(buffer);
         exit(0);
       }
     if(strcmp(tip_variabila,"int") != 0)
     {
-		char buffer[200];
+		char buffer[256];
         sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip int.",nume, tip_variabila);
         yyerror(buffer);
         exit(1);
@@ -91,14 +91,14 @@ void declarare_cu_initializare_float(char* tip_variabila,char*nume,float valoare
 {
     if(variabile_declarate(nume)!=-1)
       {
-        char buffer[200];
+        char buffer[256];
         sprintf(buffer,"Variabila %s este deja declarata",nume);
         yyerror(buffer);
         exit(0);
       }
       if(strcmp(tip_variabila,"float") != 0)
     {
-		char buffer[200];
+		char buffer[256];
         sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip float.",nume, tip_variabila);
         yyerror(buffer);
         exit(1);
@@ -115,7 +115,7 @@ void declarare_cu_initializare_char(char* tip_variabila,char*nume,char valoare,b
 {
     if(variabile_declarate(nume)!=-1)
       {
-        char buffer[200];
+        char buffer[256];
         sprintf(buffer,"Variabila %s este deja declarata",nume);
         yyerror(buffer);
         exit(0);
@@ -123,7 +123,7 @@ void declarare_cu_initializare_char(char* tip_variabila,char*nume,char valoare,b
 
   	if(strcmp(tip_variabila,"char") != 0)
     {
-		char buffer[200];
+		char buffer[256];
         sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip char.",nume, tip_variabila);
         yyerror(buffer);
         exit(1);
@@ -140,14 +140,14 @@ void declarare_cu_initializare_string(char* tip_variabila,char*nume,char* valoar
 {
     if(variabile_declarate(nume)!=-1)
       {
-        char buffer[200];
+        char buffer[256];
         sprintf(buffer,"Variabila %s este deja declarata",nume);
         yyerror(buffer);
         exit(0);
       }
     if(strcmp(tip_variabila,"string") != 0)
     {
-		char buffer[200];
+		char buffer[256];
         sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip string.",nume, tip_variabila);
         yyerror(buffer);
         exit(1);
@@ -164,7 +164,7 @@ void declarare_cu_variabila_initializata(char* tip_variabila,char* nume,char* va
 {
 	if(variabile_declarate(nume)!=-1)
     {
-        char buffer[200];
+        char buffer[256];
         sprintf(buffer,"Variabila %s este deja declarata",nume);
         yyerror(buffer);
         exit(0);
@@ -234,7 +234,24 @@ int valoarea_variabilei(char* nume)
        yyerror(buffer);
        exit(0);
     }
-    return variabile[poz].valoare;
+    if(strcmp(tip_variabila,"int") == 0)
+	{
+		return variabile[poz].valoare_int;
+	}
+	else
+		if(strcmp(tip_variabila,"float") == 0)
+		{
+			return variabile[poz].valoare_float;
+		}
+		else
+			if(strcmp(tip_variabila,"char") == 0)
+			{
+				return variabile[poz].valoare_char;
+			}
+			else
+				{
+					return variabile[poz].valoare_string;
+				}
 }
 
 %}
