@@ -32,7 +32,7 @@ int f=0; /*same cu f-vechi*/
 
 int variabile_declarate(char* nume)
 {
-     for(int i=0;i<k;i++)
+     for(int i=0;i<v;i++)
         {
           if(strcmp(variabile[i].nume,nume)==0) return i;
         }
@@ -222,14 +222,14 @@ int valoarea_variabilei(char* nume)
     int poz=variabile_declarate(nume);
     if(poz==-1)
     {
-       char buffer[200];
+       char buffer[256];
        sprintf(buffer,"Variabila %s nu a fost declarata",nume);
        yyerror(buffer);
        exit(0);
     }
     if(variabile[poz].valoare_init==0)
     {
-       char buffer[200];
+       char buffer[256];
        sprintf(buffer,"Variabila %s nu are nicio valoare",nume);
        yyerror(buffer);
        exit(0);
@@ -252,6 +252,48 @@ int valoarea_variabilei(char* nume)
 				{
 					return variabile[poz].valoare_string;
 				}
+}
+
+void asignare_valoare(char* nume,float valoare)
+{
+	int pozitie = variabile_declarate(nume);
+
+	if(pizitie == -1)
+	{
+	   char buffer[256];
+       sprintf(buffer,"Variabila %s nu a fost declarata",nume);
+       yyerror(buffer);
+       exit(0);
+	}
+
+	if(variabile[pozitie].constanta == 1)
+	{
+	   char buffer[256];
+       sprintf(buffer,"Nu se poate asigna o noua valoarea variabile constante %s.",nume);
+       yyerror(buffer);
+       exit(1);
+	}
+    /* nu stiu cum sa inglobez toate valorile, asa ca am dat float in caz de orice */
+    if(strcmp(variabile[pozitie].tip_variabila,"float") != 0 && 
+     strcmp(variabile[pozitie].tip_variabila,"int") != 0)
+     {
+     	char buffer[256];
+        sprintf(buffer,"Nu se poate asigna o valoare numerica variabilei %s.",nume);
+        yyerror(buffer);
+        exit(2);
+     }
+
+     if(strcmp(variabile[pozitie].tip_variabila,"float") == 0)
+     {
+     	variabile[pozitie].valoare_float=valoare;
+     	variabile[pozitie].valoare_init=1;
+     }
+     else
+     {
+     	variabile[pozitie].valoare_int=valoare;
+     	variabile[pozitie].valoare_init=1;
+     }
+
 }
 
 %}
@@ -305,10 +347,11 @@ declaratie: TIP ID SEMICOLON /*int a; sau int a,b,c;//functie de declarare fara 
 	  | TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($1,$2,$4,0);}
 	  | TIP ID ASSIGN STRING SEMICOLON {declarare_cu_initializare_string($1,$2,$4,0);}
 	  | TIP ID ASSIGN CHAR SEMICOLON {declarare_cu_initializare_char($1,$2,$4,0);}
-	  | TIP ID ASSIGN ID SEMICOLON
+	  | TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($1,$2,$4,0);}
 	  | CONST TIP ID SEMICOLON {declarare_fara_initializare($2,$3,1);}
-	  | CONST TIP ID ASSIGN INTEGER SEMICOLON {declarare_cu_initializare($2,$3,$5,1);}
-	  | CONST TIP ID  ASSIGN FLOAT SEMICOLON
+	  | CONST TIP ID ASSIGN INTEGER SEMICOLON {declarare_cu_initializare_int($2,$3,$5,1);}
+	  | CONST TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($2,$3,$5,1);}
+	  | CONST TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($2,$3,$5,1);}
 	  | TIP ID signatura // pt functii si clase
 	  ;
 signatura: AOPEN ACLOSE
@@ -350,7 +393,7 @@ operand: ID /* functie returnare valoare */{valoarea_variabilei($1);}
 operatii: tip_operatie SEMICOLON
         | operatii tip_operatie SEMICOLON
         ;
-tip_operatie: ID EQUAL operatie
+tip_operatie: ID EQUAL operatie {asignare_valoare($1,$3);}
 	    ;
 operatie:operand
 	|operatie PLUS operatie {$$ = $1 + $3;}
@@ -360,7 +403,7 @@ operatie:operand
         ;
 conditie_for:statement SEMICOLON conditii SEMICOLON operatie
             ;
-statement:ID ASSIGN operand
+statement:ID ASSIGN operand {asignare_valoare($1,$3);}
          ;
 %%
 void yyerror(char * s){
