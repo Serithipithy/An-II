@@ -1,0 +1,17 @@
+class #car {
+char #firma;
+char #model;
+};
+
+int #a;
+char #b;
+float #c:=3.6;
+
+begin_main
+{
+int #d:=4;
+float #f;
+#c:=#c+#d;
+#a := 2.0 + 3.0;
+}
+end_main

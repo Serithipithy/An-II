@@ -4,6 +4,7 @@
 %}
 %option noyywrap
 %%
+"const" {return CONST;}
 "TRUE" | "FALSE" {yylval.str=strdup(yytext); return BOOL;}
 "begin_main" {return BGIN;}
 "end_main" {return END;}
