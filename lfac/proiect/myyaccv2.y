@@ -393,7 +393,7 @@ bloc: IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ENDIF
     | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ELSE AOPEN operatii ACLOSE ENDIF
     | WHILE LPARAN conditii RPARAN DO AOPEN operatii ACLOSE ENDWHILE
     | FOR LPARAN conditie_for RPARAN DO AOPEN operatii ACLOSE ENDFOR
-    | operatii SEMICOLON
+    | operatii
     | declaratie
     ;
 
@@ -414,7 +414,7 @@ operand: ID /* functie returnare valoare */{$$=valoarea_variabilei($1);}
        | FLOAT {$$ = $1;}
 	     ;
 operatii: tip_operatie SEMICOLON
-        | operatii tip_operatie SEMICOLON
+        | operatii SEMICOLON tip_operatie SEMICOLON
         ;
 tip_operatie: ID ASSIGN operatie {asignare_valoare($1,$3);}
 	          ;
