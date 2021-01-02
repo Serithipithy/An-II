@@ -274,7 +274,7 @@ void asignare_valoare(char* nume,float valoare)
        exit(1);
 	}
     /* nu stiu cum sa inglobez toate valorile, asa ca am dat float in caz de orice */
-    if(strcmp(variabile[pozitie].tip_variabila,"float") != 0 && 
+    if(strcmp(variabile[pozitie].tip_variabila,"float") != 0 &&
      strcmp(variabile[pozitie].tip_variabila,"int") != 0)
      {
      	char buffer[256];
@@ -295,6 +295,28 @@ void asignare_valoare(char* nume,float valoare)
      }
 
 }
+int functii_declarate(char* nume,char* args)
+{
+    for(int i=0;i<f;i++)
+    {
+       if((strcmp(functii[i].nume,nume)==0)&&(strcmp(functii[i].args,args)) return i;
+    }
+    return -1;
+}
+void declarare_functie(char* tip, char* nume,char* args )
+{
+    if(functii_declarate(nume,args)!=-1)
+    {
+       char buffer[200];
+       sprintf(buffer,"Nu puteti declara 2 functii %s cu acelasi nume",nume);
+       yyerror(buffer);
+       exit(0);
+    }
+    functii[f].tip_functie=strdup(nume);
+    functii[f].nume=strdup(nume);
+    functii[f].args=strdup(args);
+}
+
 
 %}
 
@@ -317,7 +339,7 @@ void asignare_valoare(char* nume,float valoare)
 }
 
 %type <num> INTEGER FLOAT operatie operand
-%type <str> TIP ID CHAR STRING BOOL
+%type <str> TIP ID CHAR STRING BOOL signatura parametrii
 
 %%
 
@@ -325,41 +347,42 @@ compilator: program {printf("program corect sintactic \n");}
           ;
 
 program:declaratii main
-	| main
-	| clase declaratii main
-	| clase main
-	;
+	     | main
+	     | clase declaratii main
+	     | clase main
+	     ;
 
 clase: clasa
      | clase SEMICOLON clasa
      ;
 clasa: CLASS ID AOPEN declaratii ACLOSE SEMICOLON
+     ;
 
 main:BGIN AOPEN blocuri ACLOSE END
     ;
 
 declaratii:declaratie
-	   | declaratii declaratie
-	   ;
+	        | declaratii declaratie
+	        ;
 
 declaratie: TIP ID SEMICOLON /*int a; sau int a,b,c;//functie de declarare fara valoare*/ {declarare_fara_initializare($1,$2,0);}
-	  | TIP ID ASSIGN INTEGER SEMICOLON /*functie de declarare cu o valoare*/{declarare_cu_initializare_int($1,$2,$4,0);}
-	  | TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($1,$2,$4,0);}
-	  | TIP ID ASSIGN STRING SEMICOLON {declarare_cu_initializare_string($1,$2,$4,0);}
-	  | TIP ID ASSIGN CHAR SEMICOLON {declarare_cu_initializare_char($1,$2,$4,0);}
-	  | TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($1,$2,$4,0);}
-	  | CONST TIP ID SEMICOLON {declarare_fara_initializare($2,$3,1);}
-	  | CONST TIP ID ASSIGN INTEGER SEMICOLON {declarare_cu_initializare_int($2,$3,$5,1);}
-	  | CONST TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($2,$3,$5,1);}
-	  | CONST TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($2,$3,$5,1);}
-	  | TIP ID signatura // pt functii si clase
-	  ;
-signatura: AOPEN ACLOSE
-    	 | AOPEN parametrii ACLOSE
-    	 ;
+	        | TIP ID ASSIGN INTEGER SEMICOLON /*functie de declarare cu o valoare*/{declarare_cu_initializare_int($1,$2,$4,0);}
+	        | TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($1,$2,$4,0);}
+	        | TIP ID ASSIGN STRING SEMICOLON {declarare_cu_initializare_string($1,$2,$4,0);}
+	        | TIP ID ASSIGN CHAR SEMICOLON {declarare_cu_initializare_char($1,$2,$4,0);}
+	        | TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($1,$2,$4,0);}
+	        | CONST TIP ID SEMICOLON {declarare_fara_initializare($2,$3,1);}
+	        | CONST TIP ID ASSIGN INTEGER SEMICOLON {declarare_cu_initializare_int($2,$3,$5,1);}
+	        | CONST TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($2,$3,$5,1);}
+	        | CONST TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($2,$3,$5,1);}
+	        | TIP ID signatura {declarare_functie($1,$2,$3);}
+	        ;
+signatura: LPARAN RPARAN { $$=malloc(200); $$[0]=0;}
+    	   | LPARAN parametrii RPARAN { $$ = $2; }
+    	   ;
 
-parametrii: TIP ID
-	  | parametrii COMMA TIP ID
+parametrii: TIP ID { $$ = $1; strcat($$,", "); }
+	        | parametrii COMMA TIP ID  { $$ = $1; strcat($$,$3); }
           ;
 
 blocuri: bloc
@@ -375,18 +398,18 @@ bloc: IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ENDIF
     ;
 
 conditii: operand
-	 | BOOL
-	 | NOT operand
-	 | operand BOOLEQUAL operand
-	 | operand LESSEQUAL operand
-         | operand GREATEQUAL operand
-         | operand LESS operand
-         | operand GREAT operand
-         | operand NEG operand
-         | conditii AND conditii
-         | conditii OR conditii
-         ;
-operand: ID /* functie returnare valoare */{valoarea_variabilei($1);}
+        | BOOL
+	| NOT operand
+	| operand BOOLEQUAL operand
+	| operand LESSEQUAL operand
+        | operand GREATEQUAL operand
+        | operand LESS operand
+        | operand GREAT operand
+        | operand NEG operand
+        | conditii AND conditii
+        | conditii OR conditii
+        ;
+operand: ID {valoarea_variabilei($1);}
        | INTEGER {$$ = $1;}
        | FLOAT {$$ = $1;}
 	     ;
@@ -394,7 +417,7 @@ operatii: tip_operatie SEMICOLON
         | operatii tip_operatie SEMICOLON
         ;
 tip_operatie: ID EQUAL operatie {asignare_valoare($1,$3);}
-	    ;
+	          ;
 operatie:operand
 	|operatie PLUS operatie {$$ = $1 + $3;}
         |operatie MINUS operatie {$$ = $1 + $3;}
@@ -414,3 +437,4 @@ int main(int argc, char** argv){
 yyin=fopen(argv[1],"r");
 yyparse();
 }
+
