@@ -258,7 +258,7 @@ void asignare_valoare(char* nume,float valoare)
 {
 	int pozitie = variabile_declarate(nume);
 
-	if(pizitie == -1)
+	if(pozitie == -1)
 	{
 	   char buffer[256];
        sprintf(buffer,"Variabila %s nu a fost declarata",nume);
