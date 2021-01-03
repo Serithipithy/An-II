@@ -219,7 +219,7 @@ void declarare_cu_variabila_initializata(char* tip_variabila,char* nume,char*var
 	v++;
 }
 
-int valoarea_variabilei(char* nume)
+float valoarea_variabilei(char* nume)
 {
     int poz=variabile_declarate(nume);
     if(poz==-1)
@@ -344,6 +344,15 @@ f_ant=f;
 fclose(g);
 }
 
+void Eval(int a){
+printf("Valoarea expresiei este: %d\n",a);
+}
+
+void verif_int(int a,float b){
+   int rezultat;
+   rezultat=b*100-a*100;
+   if(rezultat==0) Eval(a);
+}
 
 
 %}
@@ -363,10 +372,12 @@ fclose(g);
 %union
 {
     int num;
+    float fl;
     char* str;
 }
 
-%type <num> INTEGER FLOAT operatie operand
+%type <num> INTEGER
+%type <fl> FLOAT operatie operand
 %type <str> TIP ID CHAR STRING BOOL signatura parametrii
 
 %%
@@ -440,19 +451,19 @@ blocuri: bloc
        operand: ID /* functie returnare valoare */{$$=valoarea_variabilei($1);}
               | INTEGER {$$ = $1;}
               | FLOAT {$$ = $1;}
-       	     ;
+       	      ;
        operatii: tip_operatie SEMICOLON
                | operatii SEMICOLON tip_operatie SEMICOLON
                ;
-       tip_operatie: ID ASSIGN operatie {asignare_valoare($1,$3);Eval($3);}
+       tip_operatie: ID ASSIGN operatie {asignare_valoare($1,$3);}
        	          ;
        operatie:operand
-       	      |operatie PLUS operatie {$$ = $1 + $3; }
+       	       |operatie PLUS operatie {$$ = $1 + $3; verif_int($$,$$);}
                |operatie MINUS operatie {$$ = $1 - $3;}
                |operatie MULT operatie {$$ = $1 * $3;}
                |operatie DIVIDE operatie {$$ = $1 / $3;}
                ;
-       conditie_for:statement SEMICOLON conditii SEMICOLON ID ASSIGN operatie { Eval($7);}
+       conditie_for:statement SEMICOLON conditii SEMICOLON ID ASSIGN operatie
                    ;
        statement:ID ASSIGN operand {asignare_valoare($1,$3);}
                 ;
@@ -467,4 +478,3 @@ FILE* g = fopen("symbol_table.txt", "w");
 yyparse();
 fclose(g);
 }
-
