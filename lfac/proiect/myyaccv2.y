@@ -19,7 +19,8 @@ _Bool constanta;
 _Bool valoare_init;  /* are o valoare initializata*/
 };
 struct variabila variabile[200];
-int v=0; /*tipa aia are aici un v-vechi care umple symbol tabel ala*/
+int v=0;
+int v_ant=0; /*folosit pentru a umple symbol_table*/
 
 struct functie
 {
@@ -28,7 +29,8 @@ char* nume;
 char* argumente;
 };
 struct functie functii[200];
-int f=0; /*same cu f-vechi*/
+int f=0;
+int f_ant=0; /*folosit pentru a umple symbol_table*/
 
 int variabile_declarate(char* nume)
 {
@@ -312,10 +314,36 @@ void declarare_functie(char* tip, char* nume,char* args )
        yyerror(buffer);
        exit(0);
     }
-    functii[f].tip_functie=strdup(nume);
+    functii[f].tip_functie=strdup(tip);
     functii[f].nume=strdup(nume);
     functii[f].argumente=strdup(args);
+    f++;
 }
+
+void simbol(char* scop){
+FILE* g =fopen("symbol_table.txt","a");
+fprintf(g,"Variabile declarate %s: \n",scop);
+for(int i=v_ant;i<v;i++) {
+   if(variabile[i].valoare_init){
+      if(strstr(variabile[i].tip_variabila,"int")) fprintf(g,"<%s> %s %d \n",variabile[i].tip_variabila,variabile[i].nume,variabile[i].valoare_int);
+      if(strstr(variabile[i].tip_variabila,"float")) fprintf(g,"<%s> %s %.6f \n",variabile[i].tip_variabila,variabile[i].nume,variabile[i].valoare_float);
+      if(strstr(variabile[i].tip_variabila,"char")) fprintf(g,"<%s> %s %s \n",variabile[i].tip_variabila,variabile[i].nume,variabile[i].valoare_char);
+      if(strstr(variabile[i].tip_variabila,"string")) fprintf(g,"<%s> %s %s \n",variabile[i].tip_variabila,variabile[i].nume,variabile[i].valoare_string);
+     }
+    else{
+     fprintf(g,"<%s> %s \n",variabile[i].tip_variabila,variabile[i].nume);
+    }
+}
+v_ant=v;
+fprintf(g,"\n");
+fprintf(g,"Functii declarate %s: \n",scop);
+ for(int i=f_ant;i<f;i++){
+    fprintf(g,"<%s> %s %s \n",functii[i].tip_functie,functii[i].nume,functii[i].argumente);
+}
+f_ant=f;
+fclose(g);
+}
+
 
 
 %}
@@ -347,7 +375,7 @@ compilator: program {printf("program corect sintactic \n");}
           ;
 
 program: clase declaratii main
-       |declaratii main
+       | declaratii main
 	     | clase main
 	     | main
 	     ;
@@ -358,7 +386,7 @@ clase: clasa
 clasa: CLASS ID AOPEN declaratii ACLOSE SEMICOLON
      ;
 
-main:BGIN AOPEN blocuri ACLOSE END
+main:BGIN AOPEN blocuri ACLOSE END {simbol("total");}
     ;
 
 declaratii:declaratie
@@ -389,45 +417,45 @@ blocuri: bloc
        | blocuri bloc
        ;
 
-bloc: FOR LPARAN conditie_for RPARAN THENDO AOPEN operatii ACLOSE ENDFOR
-    | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ENDIF
-    | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ELSE AOPEN operatii ACLOSE ENDIF
-    | WHILE LPARAN conditii RPARAN DO AOPEN operatii ACLOSE ENDWHILE
-    | operatii
-    | declaratie
-    ;
+       bloc: FOR LPARAN conditie_for RPARAN THENDO AOPEN operatii ACLOSE ENDFOR
+           | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ENDIF
+           | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ELSE AOPEN operatii ACLOSE ENDIF
+           | WHILE LPARAN conditii RPARAN DO AOPEN operatii ACLOSE ENDWHILE
+           | operatii
+           | declaratie
+           ;
 
-conditii: operand
-	      | BOOL
-	      | NOT operand
-	      | operand BOOLEQUAL operand
-	      | operand LESSEQUAL operand
-        | operand GREATEQUAL operand
-        | operand LESS operand
-        | operand GREAT operand
-        | operand NEG operand
-        | conditii AND conditii
-        | conditii OR conditii
-        ;
-operand: ID /* functie returnare valoare */{$$=valoarea_variabilei($1);}
-       | INTEGER {$$ = $1;}
-       | FLOAT {$$ = $1;}
-	     ;
-operatii: tip_operatie SEMICOLON
-        | operatii SEMICOLON tip_operatie SEMICOLON
-        ;
-tip_operatie: ID ASSIGN operatie {asignare_valoare($1,$3);}
-	          ;
-operatie:operand
-	      |operatie PLUS operatie {$$ = $1 + $3;}
-        |operatie MINUS operatie {$$ = $1 - $3;}
-        |operatie MULT operatie {$$ = $1 * $3;}
-        |operatie DIVIDE operatie {$$ = $1 / $3;}
-        ;
-conditie_for:statement SEMICOLON conditii SEMICOLON ID ASSIGN operatie
-            ;
-statement:ID ASSIGN operand {asignare_valoare($1,$3);}
-         ;
+       conditii: operand
+       	      | BOOL
+       	      | NOT operand
+       	      | operand BOOLEQUAL operand
+       	      | operand LESSEQUAL operand
+               | operand GREATEQUAL operand
+               | operand LESS operand
+               | operand GREAT operand
+               | operand NEG operand
+               | conditii AND conditii
+               | conditii OR conditii
+               ;
+       operand: ID /* functie returnare valoare */{$$=valoarea_variabilei($1);}
+              | INTEGER {$$ = $1;}
+              | FLOAT {$$ = $1;}
+       	     ;
+       operatii: tip_operatie SEMICOLON
+               | operatii SEMICOLON tip_operatie SEMICOLON
+               ;
+       tip_operatie: ID ASSIGN operatie {asignare_valoare($1,$3);Eval($3);}
+       	          ;
+       operatie:operand
+       	      |operatie PLUS operatie {$$ = $1 + $3; }
+               |operatie MINUS operatie {$$ = $1 - $3;}
+               |operatie MULT operatie {$$ = $1 * $3;}
+               |operatie DIVIDE operatie {$$ = $1 / $3;}
+               ;
+       conditie_for:statement SEMICOLON conditii SEMICOLON ID ASSIGN operatie { Eval($7);}
+                   ;
+       statement:ID ASSIGN operand {asignare_valoare($1,$3);}
+                ;
 %%
 void yyerror(char * s){
 printf("eroare: %s la linia:%d\n",s,yylineno);
@@ -435,5 +463,8 @@ printf("eroare: %s la linia:%d\n",s,yylineno);
 
 int main(int argc, char** argv){
 yyin=fopen(argv[1],"r");
+FILE* g = fopen("symbol_table.txt", "w");
 yyparse();
+fclose(g);
 }
+
