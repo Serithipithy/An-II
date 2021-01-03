@@ -45,7 +45,7 @@
 "int"|"float"|"char"|"string"|"bool" {yylval.str = strdup(yytext); return TIP;}
 \#[_a-zA-Z][_a-zA-Z0-9]* {yylval.str = strdup(yytext); return ID;}
 [-+]?[1-9][0-9]* {yylval.num=atoi(yytext); return INTEGER;}
-[-+]?[1-9]*[.][0-9]+ {yylval.num = atoi(yytext); return FLOAT;}
+[-+]?[1-9]*[.][0-9]+ {yylval.num = atof(yytext); return FLOAT;}
 [a-zA-Z] { yylval.str=strdup(yytext); return CHAR;}
 \"[_a-zA-Z ]+\" {yylval.str=strdup(yytext); return STRING;}
 [ \t] ;
