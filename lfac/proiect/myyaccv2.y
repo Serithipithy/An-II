@@ -389,10 +389,10 @@ blocuri: bloc
        | blocuri bloc
        ;
 
-bloc: IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ENDIF
+bloc: FOR LPARAN conditie_for RPARAN THENDO AOPEN operatii ACLOSE ENDFOR
+    | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ENDIF
     | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ELSE AOPEN operatii ACLOSE ENDIF
     | WHILE LPARAN conditii RPARAN DO AOPEN operatii ACLOSE ENDWHILE
-    | FOR LPARAN conditie_for RPARAN DO AOPEN operatii ACLOSE ENDFOR
     | operatii
     | declaratie
     ;
@@ -424,7 +424,7 @@ operatie:operand
         |operatie MULT operatie {$$ = $1 * $3;}
         |operatie DIVIDE operatie {$$ = $1 / $3;}
         ;
-conditie_for:statement SEMICOLON conditii SEMICOLON operatie
+conditie_for:statement SEMICOLON conditii SEMICOLON ID ASSIGN operatie
             ;
 statement:ID ASSIGN operand {asignare_valoare($1,$3);}
          ;
