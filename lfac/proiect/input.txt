@@ -4,17 +4,17 @@ char #model;
 };
 
 int #a;
-char #b;
+char #b := <a;
+string #h := "caca";
 float #c:=3.6;
 
 begin_main{
 const int #d:=4;
 float #f := 1.2;
-int #vector[10];
-int #matrice[10][10];
 if(#c<#d)then {#c:=#c+#d;}
 else{#c:=#c-#d;}end_if
 #a:=6;
+int #j[10];
 while(#a>3) do{
 #a:= #a - 1;
 }endwhile
