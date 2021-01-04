@@ -212,7 +212,7 @@ void declarare_cu_initializare_float(char* tip_variabila,char*nume,float valoare
     v++;
 }
 
-void declarare_cu_initializare_char(char* tip_variabila,char*nume,char valoare,_Bool constanta)
+void declarare_cu_initializare_char(char* tip_variabila,char*nume,char* valoare,_Bool constanta)
 {
     if(variabile_declarate(nume)!=-1)
       {
@@ -231,7 +231,7 @@ void declarare_cu_initializare_char(char* tip_variabila,char*nume,char valoare,_
             }
     variabile[v].tip_variabila=strdup(tip_variabila);
     variabile[v].nume=strdup(nume);
-    variabile[v].valoare_char=valoare;
+    variabile[v].valoare_char=valoare[1];
     variabile[v].valoare_init=1;
     variabile[v].constanta=constanta;
     v++;
@@ -255,7 +255,7 @@ void declarare_cu_initializare_string(char* tip_variabila,char*nume,char* valoar
     }
     variabile[v].tip_variabila=strdup(tip_variabila);
     variabile[v].nume=strdup(nume);
-    variabile[v].valoare_string=valoare;
+    variabile[v].valoare_string=strdup(valoare);
     variabile[v].valoare_init=1;
     variabile[v].constanta=constanta;
     v++;
@@ -419,7 +419,7 @@ for(int i=v_ant;i<v;i++) {
    if(variabile[i].valoare_init){
       if(strstr(variabile[i].tip_variabila,"int")) fprintf(g,"<%s> %s %d \n",variabile[i].tip_variabila,variabile[i].nume,variabile[i].valoare_int);
       if(strstr(variabile[i].tip_variabila,"float")) fprintf(g,"<%s> %s %.6f \n",variabile[i].tip_variabila,variabile[i].nume,variabile[i].valoare_float);
-      if(strstr(variabile[i].tip_variabila,"char")) fprintf(g,"<%s> %s %s \n",variabile[i].tip_variabila,variabile[i].nume,variabile[i].valoare_char);
+      if(strstr(variabile[i].tip_variabila,"char")) fprintf(g,"<%s> %s %c \n",variabile[i].tip_variabila,variabile[i].nume,variabile[i].valoare_char);
       if(strstr(variabile[i].tip_variabila,"string")) fprintf(g,"<%s> %s %s \n",variabile[i].tip_variabila,variabile[i].nume,variabile[i].valoare_string);
      }
     else{
