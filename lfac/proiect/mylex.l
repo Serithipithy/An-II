@@ -46,7 +46,7 @@
 \#[_a-zA-Z][_a-zA-Z0-9]* {yylval.str = strdup(yytext); return ID;}
 [-+]?[1-9][0-9]* {yylval.num=atoi(yytext); return INTEGER;}
 [-+]?[1-9]*[.][0-9]+ {yylval.fl = atof(yytext); return FLOAT;}
-[a-zA-Z] { yylval.str=strdup(yytext); return CHAR;}
+\<[a-zA-Z] { yylval.str=strdup(yytext); return CHAR;}
 \"[_a-zA-Z ]+\" {yylval.str=strdup(yytext); return STRING;}
 [ \t] ;
 \n {yylineno++;}
