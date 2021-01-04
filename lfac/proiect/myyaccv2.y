@@ -240,8 +240,8 @@ float valoarea_variabilei(char* nume)
 	{
 		return variabile[poz].valoare_int;
 	}
-	else
-		if(strcmp(variabile[poz].tip_variabila,"float") == 0)
+/*	else
+   {	if(strcmp(variabile[poz].tip_variabila,"float") == 0)
 		{
 			return variabile[poz].valoare_float;
 		}
@@ -254,6 +254,7 @@ float valoarea_variabilei(char* nume)
 				{
 					return variabile[poz].valoare_string;
 				}
+        }*/
 }
 
 void asignare_valoare(char* nume,float valoare)
@@ -478,3 +479,4 @@ FILE* g = fopen("symbol_table.txt", "w");
 yyparse();
 fclose(g);
 }
+
