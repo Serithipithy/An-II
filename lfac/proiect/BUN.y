@@ -76,7 +76,6 @@ void declarare_array_fara_init(char* tip,char* nume,int dimensiune1,int dimensiu
 
 /*
 void declarare_array_init(char* tip,char* nume,int dimensiune1,int dimensiune2,char* elemente){
-
    if(arrays_declarate(nume)!=-1){
    char buffer[256];
    sprintf(buffer,"Array %s este deja declarat",nume);
@@ -91,7 +90,7 @@ void declarare_array_init(char* tip,char* nume,int dimensiune1,int dimensiune2,c
    {
    int i=0,j=0;
       while(elemente){
-        char* nr=nullptr; int k=0;
+              char* nr=nullptr; int k=0;
         while(elemente[0]!=','){
             nr[k]=elemente[0];
             strcpy(elemente,elemente+1);
@@ -130,7 +129,6 @@ void declarare_array_init(char* tip,char* nume,int dimensiune1,int dimensiune2,c
      }
    }
    }
-
 }*/
 
 int variabile_declarate(char* nume)
@@ -138,7 +136,7 @@ int variabile_declarate(char* nume)
      for(int i=0;i<v;i++)
         {
           if(strcmp(variabile[i].nume,nume)==0) return i;
-        }
+                  }
       return -1;
 }
 
@@ -177,14 +175,14 @@ void declarare_cu_initializare_int(char* tip_variabila,char*nume,int valoare,_Bo
       }
     if(strcmp(tip_variabila,"int") != 0)
     {
-		char buffer[256];
+                char buffer[256];
         sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip int.",nume, tip_variabila);
         yyerror(buffer);
         exit(1);
     }
     variabile[v].tip_variabila=strdup(tip_variabila);
     variabile[v].nume=strdup(nume);
-    variabile[v].valoare_int=valoare;
+        variabile[v].valoare_int=valoare;
     variabile[v].valoare_init=1;
     variabile[v].constanta=constanta;
     v++;
@@ -201,7 +199,7 @@ void declarare_cu_initializare_float(char* tip_variabila,char*nume,float valoare
       }
       if(strcmp(tip_variabila,"float") != 0)
     {
-		char buffer[256];
+                char buffer[256];
         sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip float.",nume, tip_variabila);
         yyerror(buffer);
         exit(1);
@@ -224,13 +222,13 @@ void declarare_cu_initializare_char(char* tip_variabila,char*nume,char valoare,_
         exit(0);
       }
 
-  	if(strcmp(tip_variabila,"char") != 0)
+        if(strcmp(tip_variabila,"char") != 0)
     {
-		char buffer[256];
+                char buffer[256];
         sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip char.",nume, tip_variabila);
         yyerror(buffer);
         exit(1);
-    }
+            }
     variabile[v].tip_variabila=strdup(tip_variabila);
     variabile[v].nume=strdup(nume);
     variabile[v].valoare_char=valoare;
@@ -250,7 +248,7 @@ void declarare_cu_initializare_string(char* tip_variabila,char*nume,char* valoar
       }
     if(strcmp(tip_variabila,"string") != 0)
     {
-		char buffer[256];
+                char buffer[256];
         sprintf(buffer,"Variabila %s este de tip %s, iar valoarea asignata este de tip string.",nume, tip_variabila);
         yyerror(buffer);
         exit(1);
@@ -265,7 +263,7 @@ void declarare_cu_initializare_string(char* tip_variabila,char*nume,char* valoar
 
 void declarare_cu_variabila_initializata(char* tip_variabila,char* nume,char*variabila, _Bool constanta)
 {
-	if(variabile_declarate(nume)!=-1)
+        if(variabile_declarate(nume)!=-1)
     {
         char buffer[256];
         sprintf(buffer,"Variabila %s este deja declarata",nume);
@@ -274,50 +272,50 @@ void declarare_cu_variabila_initializata(char* tip_variabila,char* nume,char*var
     }
     int pozitie=variabile_declarate(variabila);
     if(pozitie == -1)
-	{
-		char buffer[256];
-		sprintf(buffer,"Variabila %s nu poate fi initializata cu o variabila nedeclarata",nume);
-		yyerror(buffer);
-		exit(1);
-	}
-	if(strcmp(tip_variabila,variabile[pozitie].tip_variabila) != 0)
-	{
-		char buffer[256];
-		sprintf(buffer,"Variabilele %s si %s nu sunt de acelasi tip.",nume,variabile[pozitie].nume);
-		yyerror(buffer);
-		exit(2);
-	}
-	if(variabile[pozitie].valoare_init == 0)
-	{
-		char buffer[256];
-		sprintf(buffer,"Variabilele %s nu poate fi initializata deoarece variabila %s nu are inca o valoare initializata.",nume,variabile[pozitie].nume);
-		yyerror(buffer);
-		exit(3);
-	}
+        {
+                char buffer[256];
+                                sprintf(buffer,"Variabila %s nu poate fi initializata cu o variabila nedeclarata",nume);
+                yyerror(buffer);
+                exit(1);
+        }
+        if(strcmp(tip_variabila,variabile[pozitie].tip_variabila) != 0)
+        {
+                char buffer[256];
+                sprintf(buffer,"Variabilele %s si %s nu sunt de acelasi tip.",nume,variabile[pozitie].nume);
+                yyerror(buffer);
+                exit(2);
+        }
+        if(variabile[pozitie].valoare_init == 0)
+        {
+                char buffer[256];
+                sprintf(buffer,"Variabilele %s nu poate fi initializata deoarece variabila %s nu are inca o valoare initializata.",nume,variabile[pozitie].nume);
+                yyerror(buffer);
+                exit(3);
+        }
 
-	variabile[v].tip_variabila=strdup(tip_variabila);
-	variabile[v].nume=strdup(nume);
-	variabile[v].valoare_init=1;
-	variabile[v].constanta=constanta;
-	if(strcmp(tip_variabila,"int") == 0)
-	{
-		variabile[v].valoare_int=variabile[pozitie].valoare_int;
-	}
-	else
-		if(strcmp(tip_variabila,"float") == 0)
-		{
-			variabile[v].valoare_float=variabile[pozitie].valoare_float;
-		}
-		else
-			if(strcmp(tip_variabila,"char") == 0)
-			{
-				variabile[v].valoare_char=variabile[pozitie].valoare_char;
-			}
-			else
-				{
-					variabile[v].valoare_string=variabile[pozitie].valoare_string;
-				}
-	v++;
+        variabile[v].tip_variabila=strdup(tip_variabila);
+        variabile[v].nume=strdup(nume);
+        variabile[v].valoare_init=1;
+        variabile[v].constanta=constanta;
+        if(strcmp(tip_variabila,"int") == 0)
+        {
+                variabile[v].valoare_int=variabile[pozitie].valoare_int;
+        }
+        else
+                if(strcmp(tip_variabila,"float") == 0)
+                {
+                        variabile[v].valoare_float=variabile[pozitie].valoare_float;
+                }
+                else
+                        if(strcmp(tip_variabila,"char") == 0)
+                        {
+                                variabile[v].valoare_char=variabile[pozitie].valoare_char;
+                        }
+                        else
+                                {
+                                        variabile[v].valoare_string=variabile[pozitie].valoare_string;
+                                }
+        v++;
 }
 
 float valoarea_variabilei(char* nume)
@@ -338,41 +336,41 @@ float valoarea_variabilei(char* nume)
        exit(0);
     }
     if(strcmp(variabile[poz].tip_variabila,"int") == 0)
-	{
-		return variabile[poz].valoare_int;
-	}
-	else
-   {	if(strcmp(variabile[poz].tip_variabila,"float") == 0)
-		{
-			return variabile[poz].valoare_float;
-		}
+        {
+                return variabile[poz].valoare_int;
+        }
+        else
+   {    if(strcmp(variabile[poz].tip_variabila,"float") == 0)
+                {
+                        return variabile[poz].valoare_float;
+                }
     }
 }
 
 void asignare_valoare(char* nume,float valoare)
 {
-	int pozitie = variabile_declarate(nume);
+        int pozitie = variabile_declarate(nume);
 
-	if(pozitie == -1)
-	{
-	   char buffer[256];
+        if(pozitie == -1)
+        {
+           char buffer[256];
        sprintf(buffer,"Variabila %s nu a fost declarata",nume);
        yyerror(buffer);
        exit(0);
-	}
+        }
 
-	if(variabile[pozitie].constanta == 1)
-	{
-	   char buffer[256];
+        if(variabile[pozitie].constanta == 1)
+        {
+           char buffer[256];
        sprintf(buffer,"Nu se poate asigna o noua valoarea variabile constante %s.",nume);
        yyerror(buffer);
        exit(1);
-	}
-    /* nu stiu cum sa inglobez toate valorile, asa ca am dat float in caz de orice */
+        }
+            /* nu stiu cum sa inglobez toate valorile, asa ca am dat float in caz de orice */
     if(strcmp(variabile[pozitie].tip_variabila,"float") != 0 &&
      strcmp(variabile[pozitie].tip_variabila,"int") != 0)
      {
-     	char buffer[256];
+        char buffer[256];
         sprintf(buffer,"Nu se poate asigna o valoare numerica variabilei %s.",nume);
         yyerror(buffer);
         exit(2);
@@ -380,13 +378,13 @@ void asignare_valoare(char* nume,float valoare)
 
      if(strcmp(variabile[pozitie].tip_variabila,"float") == 0)
      {
-     	variabile[pozitie].valoare_float=valoare;
-     	variabile[pozitie].valoare_init=1;
+        variabile[pozitie].valoare_float=valoare;
+        variabile[pozitie].valoare_init=1;
      }
      else
      {
-     	variabile[pozitie].valoare_int=valoare;
-     	variabile[pozitie].valoare_init=1;
+        variabile[pozitie].valoare_int=valoare;
+        variabile[pozitie].valoare_init=1;
      }
 
 }
@@ -416,6 +414,7 @@ void declarare_functie(char* tip, char* nume,char* args )
 void simbol(char* scop){
 FILE* g =fopen("symbol_table.txt","a");
 fprintf(g,"Variabile declarate %s: \n",scop);
+if ( v-v_ant != 0 ){
 for(int i=v_ant;i<v;i++) {
    if(variabile[i].valoare_init){
       if(strstr(variabile[i].tip_variabila,"int")) fprintf(g,"<%s> %s %d \n",variabile[i].tip_variabila,variabile[i].nume,variabile[i].valoare_int);
@@ -427,14 +426,24 @@ for(int i=v_ant;i<v;i++) {
      fprintf(g,"<%s> %s \n",variabile[i].tip_variabila,variabile[i].nume);
     }
 }
+}
+else{
+  fprintf(g,"Nu exista variabile declarate %s.\n",scop);
+  }
 v_ant=v;
 fprintf(g,"\n");
+if(f-f_ant != 0){
 fprintf(g,"Functii declarate %s: \n",scop);
  for(int i=f_ant;i<f;i++){
     fprintf(g,"<%s> %s %s \n",functii[i].tip_functie,functii[i].nume,functii[i].argumente);
 }
+}
+else{
+  fprintf(g,"Nu exista functii declarate %s.\n",scop);
+  }
 f_ant=f;
 fprintf(g,"\n");
+if( a-a_ant != 0){
 fprintf(g,"Arrays declarate %s: \n",scop);
  for(int i=a_ant;i<a;i++){
  if(arrays[i].dimensiune2==0)
@@ -445,7 +454,12 @@ fprintf(g,"Arrays declarate %s: \n",scop);
     fprintf(g,"<%s> %s [%d][%d] \n",arrays[i].tip_array,arrays[i].nume,arrays[i].dimensiune1,arrays[i].dimensiune2);
     }
 }
+}
+else{
+  fprintf(g,"Nu exista arrays declarate %s.\n",scop);
+  }
 a_ant=a;
+fprintf(g,"\n");
 fclose(g);
 }
 
@@ -490,11 +504,13 @@ void verif_int(int a,float b){
 compilator: program {printf("program corect sintactic \n");}
           ;
 
-program: clase declaratii main
-       | declaratii main
-	     | clase main
-	     | main
-	     ;
+program: global main
+       | main
+       ;       
+global : clase declaratii {simbol("global");}
+       | declaratii {simbol("global");}
+       | clase
+       ;
 
 clase: clasa
      | clase SEMICOLON clasa
@@ -502,26 +518,26 @@ clase: clasa
 clasa: CLASS ID AOPEN declaratii ACLOSE SEMICOLON {simbol("in clase");}
      ;
 
-main:BGIN AOPEN blocuri ACLOSE END {simbol("total");}
+main:BGIN AOPEN blocuri ACLOSE END {simbol("local");}
     ;
 
 declaratii:declaratie
-	        | declaratii declaratie
-	        ;
+                | declaratii declaratie
+                ;
 
 declaratie: TIP ID SEMICOLON /*int a; sau int a,b,c;//functie de declarare fara valoare*/ {declarare_fara_initializare($1,$2,0);}
-	        | TIP ID ASSIGN INTEGER SEMICOLON /*functie de declarare cu o valoare*/{declarare_cu_initializare_int($1,$2,$4,0);}
-	        | TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($1,$2,$4,0);}
-	        | TIP ID ASSIGN STRING SEMICOLON {declarare_cu_initializare_string($1,$2,$4,0);}
-	        | TIP ID ASSIGN CHAR SEMICOLON {declarare_cu_initializare_char($1,$2,$4,0);}
-	        | TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($1,$2,$4,0);}
-	        | CONST TIP ID SEMICOLON {declarare_fara_initializare($2,$3,1);}
-	        | CONST TIP ID ASSIGN INTEGER SEMICOLON {declarare_cu_initializare_int($2,$3,$5,1);}
-	        | CONST TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($2,$3,$5,1);}
-	        | CONST TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($2,$3,$5,1);}
-	        | TIP ID signatura /* pt functii si clase*/{declarare_functie($1,$2,$3);}
+                | TIP ID ASSIGN INTEGER SEMICOLON /*functie de declarare cu o valoare*/{declarare_cu_initializare_int($1,$2,$4,0);}
+                | TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($1,$2,$4,0);}
+                | TIP ID ASSIGN STRING SEMICOLON {declarare_cu_initializare_string($1,$2,$4,0);}
+                | TIP ID ASSIGN CHAR SEMICOLON {declarare_cu_initializare_char($1,$2,$4,0);}
+                | TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($1,$2,$4,0);}
+                | CONST TIP ID SEMICOLON {declarare_fara_initializare($2,$3,1);}
+                | CONST TIP ID ASSIGN INTEGER SEMICOLON {declarare_cu_initializare_int($2,$3,$5,1);}
+                | CONST TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($2,$3,$5,1);}
+                | CONST TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($2,$3,$5,1);}
+                | TIP ID signatura /* pt functii si clase*/{declarare_functie($1,$2,$3);}
           | array SEMICOLON
-	        ;
+                ;
 array:TIP ID BROPEN INTEGER BRCLOSE{declarare_array_fara_init($1,$2,$4,0);}
      |TIP ID BROPEN INTEGER BRCLOSE BROPEN INTEGER BRCLOSE {declarare_array_fara_init($1,$2,$4,$7);}
      ;
@@ -529,11 +545,11 @@ array:TIP ID BROPEN INTEGER BRCLOSE{declarare_array_fara_init($1,$2,$4,0);}
         | elemente COMMA INTEGER{$$=convert_nr($3); strcat($$,",");}
         ;*/
 signatura: LPARAN RPARAN { $$=malloc(200); $$[0]=0;}
-    	   | LPARAN parametrii RPARAN { $$ = $2; }
-    	   ;
+           | LPARAN parametrii RPARAN { $$ = $2; }
+           ;
 
 parametrii: TIP ID { $$ = $1; strcat($$,", "); }
-	        | parametrii COMMA TIP ID  { $$ = $1; strcat($$,$3); }
+                | parametrii COMMA TIP ID  { $$ = $1; strcat($$,$3); }
           ;
 
 blocuri: bloc
@@ -546,13 +562,13 @@ blocuri: bloc
            | WHILE LPARAN conditii RPARAN DO AOPEN operatii ACLOSE ENDWHILE
            | operatii
            | declaratie
-           ;
+                      ;
 
        conditii: operand
-       	      | BOOL
-       	      | NOT operand
-       	      | operand BOOLEQUAL operand
-       	      | operand LESSEQUAL operand
+              | BOOL
+              | NOT operand
+              | operand BOOLEQUAL operand
+              | operand LESSEQUAL operand
                | operand GREATEQUAL operand
                | operand LESS operand
                | operand GREAT operand
@@ -563,14 +579,14 @@ blocuri: bloc
        operand: ID {$$=valoarea_variabilei($1);}
               | INTEGER {$$ = $1;}
               | FLOAT {$$ = $1;}
-       	      ;
+              ;
        operatii: tip_operatie SEMICOLON
                | operatii SEMICOLON tip_operatie SEMICOLON
                ;
        tip_operatie: ID ASSIGN operatie {asignare_valoare($1,$3);}
-       	          ;
+                  ;
        operatie:operand
-       	       |operatie PLUS operatie {$$ = $1 + $3; verif_int($$,$$);}
+               |operatie PLUS operatie {$$ = $1 + $3; verif_int($$,$$);}
                |operatie MINUS operatie {$$ = $1 - $3;verif_int($$,$$);}
                |operatie MULT operatie {$$ = $1 * $3;verif_int($$,$$);}
                |operatie DIVIDE operatie {$$ = $1 / $3;verif_int($$,$$);}
