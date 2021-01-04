@@ -499,7 +499,7 @@ program: clase declaratii main
 clase: clasa
      | clase SEMICOLON clasa
      ;
-clasa: CLASS ID AOPEN declaratii ACLOSE SEMICOLON
+clasa: CLASS ID AOPEN declaratii ACLOSE SEMICOLON {simbol("in clase");}
      ;
 
 main:BGIN AOPEN blocuri ACLOSE END {simbol("total");}
