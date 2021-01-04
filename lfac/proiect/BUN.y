@@ -32,6 +32,107 @@ struct functie functii[200];
 int f=0;
 int f_ant=0; /*folosit pentru a umple symbol_table*/
 
+struct array
+{
+  char* tip_array;
+  char* nume;
+  int dimensiune1,dimensiune2;
+  int vector[300];
+  int matrice[300][300];
+};
+struct array arrays[200];
+int a=0; int a_ant=0;
+
+int arrays_declarate(char* nume)
+{
+     for(int i=0;i<a;i++)
+        {
+          if(strcmp(arrays[i].nume,nume)==0) return i;
+        }
+      return -1;
+}
+
+/*char* convert_nr(int numar){
+char nr[34567];
+itoa(nr,numar,10);
+return nr;
+}
+*/
+void declarare_array_fara_init(char* tip,char* nume,int dimensiune1,int dimensiune2){
+
+   if(arrays_declarate(nume)!=-1){
+   char buffer[256];
+   sprintf(buffer,"Array %s este deja declarat",nume);
+   yyerror(buffer);
+   exit(0);
+   }
+   arrays[a].tip_array=strdup(tip);
+   arrays[a].nume=strdup(nume);
+   arrays[a].dimensiune1=dimensiune1;
+   arrays[a].dimensiune2=dimensiune2;
+   a++;
+
+}
+
+/*
+void declarare_array_init(char* tip,char* nume,int dimensiune1,int dimensiune2,char* elemente){
+
+   if(arrays_declarate(nume)!=-1){
+   char buffer[256];
+   sprintf(buffer,"Array %s este deja declarat",nume);
+   yyerror(buffer);
+   exit(0);
+   }
+   arrays[a].tip_array=strdup(tip);
+   arrays[a].nume=strdup(nume);
+   arrays[a].dimensiune1=dimensiune1;
+   arrays[a].dimensiune2=dimensiune2;
+   if(arrays[a].dimensiune2>0)
+   {
+   int i=0,j=0;
+      while(elemente){
+        char* nr=nullptr; int k=0;
+        while(elemente[0]!=','){
+            nr[k]=elemente[0];
+            strcpy(elemente,elemente+1);
+        }
+        int x;
+        itoa(x,nr,10);
+        if(j>dimensiune2)
+        {
+          j=0;
+          i++;
+        }
+        if(i>dimensiune1)
+        {
+           exit(1);
+        }
+        arrays[a].matrice[i][j]=x;
+        j++;
+      }
+   }
+   else{
+   int i=0;
+   while(elemente){
+     char* nr=nullptr; int k=0;
+     while(elemente[0]!=','){
+         nr[k]=elemente[0];
+         strcpy(elemente,elemente+1);
+     }
+     int x;
+     itoa(x,nr,10);
+     if(i<dimensiune1){
+     arrays[a].vector[i]=x;
+     i++;
+     }
+     else{
+     exit(2);
+     }
+   }
+   }
+
+}*/
+
 int variabile_declarate(char* nume)
 {
      for(int i=0;i<v;i++)
@@ -333,6 +434,18 @@ fprintf(g,"Functii declarate %s: \n",scop);
     fprintf(g,"<%s> %s %s \n",functii[i].tip_functie,functii[i].nume,functii[i].argumente);
 }
 f_ant=f;
+fprintf(g,"\n");
+fprintf(g,"Arrays declarate %s: \n",scop);
+ for(int i=a_ant;i<a;i++){
+ if(arrays[i].dimensiune2==0)
+ {
+ fprintf(g,"<%s> %s [%d] \n",arrays[i].tip_array,arrays[i].nume,arrays[i].dimensiune1);
+ }
+    else{
+    fprintf(g,"<%s> %s [%d][%d] \n",arrays[i].tip_array,arrays[i].nume,arrays[i].dimensiune1,arrays[i].dimensiune2);
+    }
+}
+a_ant=a;
 fclose(g);
 }
 
@@ -409,9 +522,12 @@ declaratie: TIP ID SEMICOLON /*int a; sau int a,b,c;//functie de declarare fara 
 	        | TIP ID signatura /* pt functii si clase*/{declarare_functie($1,$2,$3);}
           | array SEMICOLON
 	        ;
-array:TIP ID BROPEN INTEGER BRCLOSE
-     |TIP ID BROPEN INTEGER BRCLOSE BROPEN INTEGER BRCLOSE
+array:TIP ID BROPEN INTEGER BRCLOSE{declarare_array_fara_init($1,$2,$4,0);}
+     |TIP ID BROPEN INTEGER BRCLOSE BROPEN INTEGER BRCLOSE {declarare_array_fara_init($1,$2,$4,$7);}
      ;
+/*elemente: INTEGER {$$=convert_nr($1);}
+        | elemente COMMA INTEGER{$$=convert_nr($3); strcat($$,",");}
+        ;*/
 signatura: LPARAN RPARAN { $$=malloc(200); $$[0]=0;}
     	   | LPARAN parametrii RPARAN { $$ = $2; }
     	   ;
@@ -455,9 +571,9 @@ blocuri: bloc
        	          ;
        operatie:operand
        	       |operatie PLUS operatie {$$ = $1 + $3; verif_int($$,$$);}
-               |operatie MINUS operatie {$$ = $1 - $3;}
-               |operatie MULT operatie {$$ = $1 * $3;}
-               |operatie DIVIDE operatie {$$ = $1 / $3;}
+               |operatie MINUS operatie {$$ = $1 - $3;verif_int($$,$$);}
+               |operatie MULT operatie {$$ = $1 * $3;verif_int($$,$$);}
+               |operatie DIVIDE operatie {$$ = $1 / $3;verif_int($$,$$);}
                ;
        conditie_for:statement SEMICOLON conditii SEMICOLON ID ASSIGN operatie
                    ;
