@@ -513,15 +513,18 @@ a_ant=a;
 fprintf(g,"\n");
 fclose(g);
 }
+int expresii[300],e=0;
 
-void Eval(int a){
-printf("Valoarea expresiei este: %d\n",a);
+void Eval(){
+for(int i=0;i<e;i++){
+printf("Valoarea expresiei este: %d\n",expresii[i]);
+}
 }
 
 void verif_int(int a,float b){
    int rezultat;
    rezultat=b*100-a*100;
-   if(rezultat==0) Eval(a);
+   if(rezultat==0) expresii[e++]=a;
 }
 
 int valoare_array(char* nume, int dimensiune1, int dimensiune2){
@@ -570,7 +573,7 @@ int valoare_array(char* nume, int dimensiune1, int dimensiune2){
 
 %%
 
-compilator: program {printf("program corect sintactic \n");}
+compilator: program {printf("program corect sintactic \n"); Eval();}
           ;
 
 program: global main
