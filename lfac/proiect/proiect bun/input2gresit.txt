@@ -30,7 +30,7 @@ float #rezh;
 
 float #expresie;
 
-#expresie := #a + #c * #d - #b;
+#expresie := #a + #c * #d - #b / 2;
 
 #ghostvar := #a + #b * #c;
 
