@@ -524,6 +524,24 @@ void verif_int(int a,float b){
    if(rezultat==0) Eval(a);
 }
 
+int valoare_array(char* nume, int dimensiune1, int dimensiune2){
+  int poz= arrays_declarate(nume);
+  if(poz==-1){
+   char buffer[256];
+   sprintf(buffer,"Array %s este deja declarat",nume);
+   yyerror(buffer);
+   exit(0);
+   }
+
+   if (dimensiune2 == 0){
+      if(dimensiune1 <= arrays[poz].dimensiune1 && dimensiune1 > 0) return arrays[poz].vector[dimensiune1];
+   }
+   else {
+    if(dimensiune1 <= arrays[poz].dimensiune1 && dimensiune1 > 0 && dimensiune2 <= arrays[poz].dimensiune2 && dimensiune2 > 0)
+      return arrays[poz].matrice[dimensiune1][dimensiune2];
+   }
+}
+
 
 %}
 
@@ -573,22 +591,22 @@ main:BGIN AOPEN blocuri ACLOSE END {simbol("local");}
     ;
 
 declaratii:declaratie
-                | declaratii declaratie
-                ;
+          | declaratii declaratie
+          ;
 
 declaratie: TIP ID SEMICOLON /*int a; sau int a,b,c;//functie de declarare fara valoare*/ {declarare_fara_initializare($1,$2,0);}
-                | TIP ID ASSIGN INTEGER SEMICOLON /*functie de declarare cu o valoare*/{declarare_cu_initializare_int($1,$2,$4,0);}
-                | TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($1,$2,$4,0);}
-                | TIP ID ASSIGN STRING SEMICOLON {declarare_cu_initializare_string($1,$2,$4,0);}
-                | TIP ID ASSIGN CHAR SEMICOLON {declarare_cu_initializare_char($1,$2,$4,0);}
-                | TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($1,$2,$4,0);}
-                | CONST TIP ID SEMICOLON {declarare_fara_initializare($2,$3,1);}
-                | CONST TIP ID ASSIGN INTEGER SEMICOLON {declarare_cu_initializare_int($2,$3,$5,1);}
-                | CONST TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($2,$3,$5,1);}
-                | CONST TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($2,$3,$5,1);}
-                | TIP ID signatura /* pt functii si clase*/{declarare_functie($1,$2,$3);}
+          | TIP ID ASSIGN INTEGER SEMICOLON /*functie de declarare cu o valoare*/{declarare_cu_initializare_int($1,$2,$4,0);}
+          | TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($1,$2,$4,0);}
+          | TIP ID ASSIGN STRING SEMICOLON {declarare_cu_initializare_string($1,$2,$4,0);}
+          | TIP ID ASSIGN CHAR SEMICOLON {declarare_cu_initializare_char($1,$2,$4,0);}
+          | TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($1,$2,$4,0);}
+          | CONST TIP ID SEMICOLON {declarare_fara_initializare($2,$3,1);}
+          | CONST TIP ID ASSIGN INTEGER SEMICOLON {declarare_cu_initializare_int($2,$3,$5,1);}
+          | CONST TIP ID ASSIGN FLOAT SEMICOLON {declarare_cu_initializare_float($2,$3,$5,1);}
+          | CONST TIP ID ASSIGN ID SEMICOLON {declarare_cu_variabila_initializata($2,$3,$5,1);}
+          | TIP ID signatura /* pt functii si clase*/{declarare_functie($1,$2,$3);}
           | array SEMICOLON
-                ;
+          ;
 array:TIP ID BROPEN INTEGER BRCLOSE{declarare_array_fara_init($1,$2,$4,0);}
      |TIP ID BROPEN INTEGER BRCLOSE BROPEN INTEGER BRCLOSE {declarare_array_fara_init($1,$2,$4,$7);}
      |TIP ID BROPEN INTEGER BRCLOSE ASSIGN AOPEN elemente ACLOSE {declarare_array_init($1,$2,$4,0,$8);}
@@ -598,56 +616,58 @@ elemente: NR {$$ = $1;}
         | elemente COMMA NR {$$ = $1; strcat($$,",");strcat($$,$3);}
         ;
 signatura: LPARAN RPARAN { $$=malloc(200); $$[0]=0;}
-           | LPARAN parametrii RPARAN { $$ = $2; }
-           ;
+         | LPARAN parametrii RPARAN { $$ = $2; }
+         ;
 
 parametrii: TIP ID { $$ = $1; strcat($$,", "); }
-                | parametrii COMMA TIP ID  { $$ = $1; strcat($$,$3); }
+          | parametrii COMMA TIP ID  { $$ = $1; strcat($$,$3); }
           ;
 
 blocuri: bloc
        | blocuri bloc
        ;
 
-       bloc: FOR LPARAN conditie_for RPARAN THENDO AOPEN operatii ACLOSE ENDFOR
-           | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ENDIF
-           | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ELSE AOPEN operatii ACLOSE ENDIF
-           | WHILE LPARAN conditii RPARAN DO AOPEN operatii ACLOSE ENDWHILE
-           | operatii
-           | declaratie
-                      ;
+bloc: FOR LPARAN conditie_for RPARAN THENDO AOPEN operatii ACLOSE ENDFOR
+    | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ENDIF
+    | IF LPARAN conditii RPARAN THEN AOPEN operatii ACLOSE ELSE AOPEN operatii ACLOSE ENDIF
+    | WHILE LPARAN conditii RPARAN DO AOPEN operatii ACLOSE ENDWHILE
+    | operatii
+    | declaratie
+    ;
 
-       conditii: operand
-              | BOOL
-              | NOT operand
-              | operand BOOLEQUAL operand
-              | operand LESSEQUAL operand
-               | operand GREATEQUAL operand
-               | operand LESS operand
-               | operand GREAT operand
-               | operand NEG operand
-               | conditii AND conditii
-               | conditii OR conditii
-               ;
-       operand: ID {$$=valoarea_variabilei($1);}
-              | INTEGER {$$ = $1;}
-              | FLOAT {$$ = $1;}
-              ;
-       operatii: tip_operatie SEMICOLON
-               | operatii SEMICOLON tip_operatie SEMICOLON
-               ;
-       tip_operatie: ID ASSIGN operatie {asignare_valoare($1,$3);}
-                  ;
-       operatie:operand
-               |operatie PLUS operatie {$$ = $1 + $3; verif_int($$,$$);}
-               |operatie MINUS operatie {$$ = $1 - $3;verif_int($$,$$);}
-               |operatie MULT operatie {$$ = $1 * $3;verif_int($$,$$);}
-               |operatie DIVIDE operatie {$$ = $1 / $3;verif_int($$,$$);}
-               ;
-       conditie_for:statement SEMICOLON conditii SEMICOLON ID ASSIGN operatie
-                   ;
-       statement:ID ASSIGN operand {asignare_valoare($1,$3);}
-                ;
+conditii: operand
+      | BOOL
+      | NOT operand
+      | operand BOOLEQUAL operand
+      | operand LESSEQUAL operand
+      | operand GREATEQUAL operand
+      | operand LESS operand
+      | operand GREAT operand
+      | operand NEG operand
+      | conditii AND conditii
+      | conditii OR conditii
+     ;
+operand: ID {$$=valoarea_variabilei($1);}
+       | ID BROPEN INTEGER BRCLOSE {$$=valoare_array($1,$3,0);}
+       | ID BROPEN INTEGER BRCLOSE BROPEN INTEGER BRCLOSE {$$=valoare_array($1,$3,$6);}
+       | INTEGER {$$ = $1;}
+       | FLOAT {$$ = $1;}
+       ;
+operatii: tip_operatie SEMICOLON
+       | operatii SEMICOLON tip_operatie SEMICOLON
+       ;
+tip_operatie: ID ASSIGN operatie {asignare_valoare($1,$3);}
+          ;
+operatie:operand
+       |operatie PLUS operatie {$$ = $1 + $3; verif_int($$,$$);}
+       |operatie MINUS operatie {$$ = $1 - $3;verif_int($$,$$);}
+       |operatie MULT operatie {$$ = $1 * $3;verif_int($$,$$);}
+       |operatie DIVIDE operatie {$$ = $1 / $3;verif_int($$,$$);}
+       ;
+conditie_for:statement SEMICOLON conditii SEMICOLON ID ASSIGN operatie
+           ;
+statement:ID ASSIGN operand {asignare_valoare($1,$3);}
+        ;
 %%
 void yyerror(char * s){
 printf("eroare: %s la linia:%d\n",s,yylineno);
