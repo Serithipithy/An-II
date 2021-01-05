@@ -113,30 +113,32 @@ void declarare_array_init(char* tip,char* nume,int dimensiune1,int dimensiune2,c
    arrays[a].dimensiune2=dimensiune2;
    if(arrays[a].dimensiune2>0)
    {
-   int i=0,j=0;
-      while(strlen(elemente)>0){
+   char copie[2024];
+   strcpy (copie,elemente);
+   int i=1; int j=1; int l=0;
+      while(strlen(copie)>l+1){
               char nr[10]; int k=0;
-        while(elemente[0]!=','){
-            nr[k]=elemente[0];k++;
-            strcpy(elemente,elemente+1);
+        while(copie[l]!=',' && strlen(copie) > l){
+            nr[k]=copie[l++];k++;
         }
-        strcpy(elemente,elemente+1);
+        l++;
         int x;
         strcpy(nr, nr+1);
         nr[strlen(nr)-1]='\0';
         x=atoi(nr);
-        printf("x=%d\n",x);
-        if(j>dimensiune2)
-        {
-          j=0;
-          i++;
-        }
         if(i>dimensiune1)
         {
            break;
         }
+        printf("i:%d - j:%d\n",i,j);
         arrays[a].matrice[i][j]=x;
-        j++;
+        if(j>=dimensiune2)
+        {
+          j=1;
+          i++;
+          printf("am schimbat\n");
+        }
+        else j++;
       }
    }
    else{
