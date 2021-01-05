@@ -1,0 +1,37 @@
+int #a;
+int #b := 2;
+
+float #c;
+float #d := 3.4;
+
+begin_main{
+
+int #reza;
+int #rezb;
+int #rezc;
+int #rezd;
+
+#a := 30;
+#reza := #a + #b;
+#rezb := #a - #b;
+#rezc := #a * #b;
+#rezd := #a / #b;  
+
+float #reze;
+float #rezf;
+float #rezg;
+float #rezh;
+
+#c := 98.53;
+#reze := #c + #d;
+#rezf := #c - #d;
+#rezg := #c * #d;
+#rezh := #c / #d;
+
+float #expresie;
+
+#expresie := #a + #c * #d - #b;
+
+#ghostvar := #a + #b * #c;
+
+}end_main
