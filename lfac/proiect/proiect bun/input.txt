@@ -31,4 +31,9 @@ then_do
 {
 #f:=#f*3;
 }end_for
+
+int #op:=1;
+int #opp:=10;
+#op := #op + #vect[3];
+#opp := #opp - #matr[2][1];
 }end_main
